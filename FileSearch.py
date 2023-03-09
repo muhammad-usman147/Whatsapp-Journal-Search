@@ -6,11 +6,17 @@ class JournalIDError(Exception):
     def __init__(self,message):
         self.message = message
 
-
 class Search():
     def __init__(self):
         self.dataframe = pd.DataFrame({})  
 
+
+    #private method to remove any special characters from the text
+    def __Remove_Special_Characters(self,text:str):
+        return ''.join([i for i in text if i.isalpha()])
+    
+
+    #method to create a dataframe from all files
     def CreateDataFrames(self,df_list:list,FILE_NAME:str):
         if isinstance(df_list,list) and isinstance(FILE_NAME,str):
             try: 
@@ -30,6 +36,7 @@ class Search():
                         df = pd.concat([df,temp_df],axis=0)
                     df.to_csv(FILE_NAME,index=False)
                     self.dataframe = df
+                    
                     return True, None
             except Exception as e:
                 #if by chance any error occurs
@@ -64,15 +71,40 @@ class Search():
                 results = self.dataframe.query(f"eISSN == '{id}' |eISSN == '{id}'  ")
             else:
                 JournalIDError(f"The provided either ID: {id} or search_type: {search_by} is invalid ")
-          
-            for _,r in results.iterrows():
-                    data['Publisher name'].append(r['Publisher name'])
-                    data['Category'].append(r['Web of Science Categories'])
-                    data['Index'].append(r['index'])
-            return data
-                
+            
+            if results.shape[0] > 0:
+                for _,row in results.iterrows():
+                        data['Publisher name'].append(row['Publisher name'])
+                        data['Category'].append(row['Web of Science Categories'])
+                        data['Index'].append(row['index'])
+                return data
+            else:
+                return None
 
         else:
             raise JournalIDError("Journal ID should be either ISSN, eISSN, both")
+        
+    def SearchByKeyword(self,keyword:str):
+        print(self.__Remove_Special_Characters(keyword))
+        data = {
+            'Publisher name':[],
+            'Index':[],
+            'Category':[]
+        }
+        if isinstance(keyword,str):
+            keyword = keyword.lower()
+            #searching for the input keyword in the entire dataframe
+            results = self.dataframe.applymap(lambda x:keyword in str(x).lower())
+            #filtering out the required rows that contains the specific keywords
+            results = self.dataframe.loc[results.any(axis=1)]
+            if results.shape[0] > 0:
+                for _,row in results.iterrows():
+                    data['Publisher name'].append(row['Publisher name'])
+                    data['Category'].append(row['Web of Science Categories'])
+                    data['Index'].append(row['index'])
+                return data 
+            else:
+                return None
 
-
+        else:
+            raise TypeError(f"Expected keyword by <str>, but got {type(keyword)}")
