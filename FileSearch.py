@@ -14,7 +14,11 @@ class Search():
     #private method to remove any special characters from the text
     def __Remove_Special_Characters(self,text:str):
         return ''.join([i for i in text if i.isalpha()])
-    
+    def __has_keyword(self,text, keywords):
+        
+        if self.__Remove_Special_Characters(keywords.lower()) in self.__Remove_Special_Characters(text.lower()):
+            return True
+        return False
 
     #method to create a dataframe from all files
     def CreateDataFrames(self,df_list:list,FILE_NAME:str):
@@ -53,10 +57,12 @@ class Search():
         search_by = [issn, eissn]
 
         '''
+        output = ""
         data = {
             'Publisher name':[],
             'Index':[],
-            'Category':[]
+            'Category':[],
+            'eISSN':[]
         }
         journal_id = ['issn', 'eissn','both']
         search_by = search_by.lower()
@@ -74,37 +80,41 @@ class Search():
             
             if results.shape[0] > 0:
                 for _,row in results.iterrows():
-                        data['Publisher name'].append(row['Publisher name'])
-                        data['Category'].append(row['Web of Science Categories'])
-                        data['Index'].append(row['index'])
-                return data
+                        print(row)
+                        output += "--"*10 + f"\n *Published Name:* {row['Publisher name']}" \
+                        + f"\n*Index:* {row['index']}" + f"\n*Category: {row['Web of Science Categories']}*" \
+                        + f"\n*eISSN*: {row['eISSN']} \n"
+                return output
             else:
-                return None
+                return "Nothing found"
 
         else:
             raise JournalIDError("Journal ID should be either ISSN, eISSN, both")
         
     def SearchByKeyword(self,keyword:str):
-        print(self.__Remove_Special_Characters(keyword))
+        output = ""
+        #keyword = self.__Remove_Special_Characters(keyword)
         data = {
             'Publisher name':[],
             'Index':[],
             'Category':[]
         }
         if isinstance(keyword,str):
-            keyword = keyword.lower()
+            #keyword = keyword.lower()
             #searching for the input keyword in the entire dataframe
-            results = self.dataframe.applymap(lambda x:keyword in str(x).lower())
+            results = self.dataframe.applymap(lambda x: self.__has_keyword(str(x), keyword))
             #filtering out the required rows that contains the specific keywords
             results = self.dataframe.loc[results.any(axis=1)]
+
             if results.shape[0] > 0:
                 for _,row in results.iterrows():
-                    data['Publisher name'].append(row['Publisher name'])
-                    data['Category'].append(row['Web of Science Categories'])
-                    data['Index'].append(row['index'])
-                return data 
+                    output += "--"*10 + f"\n*Published Name:* {row['Publisher name']}" \
+                        + f"\n*Index:* {row['index']}" + f"\n*Category: {row['Web of Science Categories']}*" \
+                        + f"\n*eISSN*: {row['eISSN']} \n"
+                return output
             else:
-                return None
+                return "Sorry...!! Found Nothing"
 
         else:
-            raise TypeError(f"Expected keyword by <str>, but got {type(keyword)}")
+            return None
+            #raise TypeError(f"Expected keyword by <str>, but got {type(keyword)}")
