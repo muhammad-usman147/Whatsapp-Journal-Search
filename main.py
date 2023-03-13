@@ -1,5 +1,12 @@
 import glob 
 from FileSearch import Search
+import textwrap
+class Details():
+    def __init__(self):
+        self.by = None
+        self.id = None
+        self.keyword = None
+
 
 
 FILES_DIR = ''
@@ -14,13 +21,17 @@ def main():
 
 
     #--- Search By ISSN and eISSN
-    #by = input("Search By [ISSN, eISSN, both]? ")
-    #id = input("Enter ID: ")
+    # by = input("Search By [ISSN, eISSN, both]? ")
+    # id = input("Enter ID: ")
     
-    #output = search_object.SearchByID(id,by)
-    #print(output)
-    print(search_object.SearchByKeyword('english'))
-
+    # output = search_object.SearchByID(id,by)
+    # print(output.strip())
+    output = search_object.SearchByKeyword('plant')
+    if len(output) > 1500:
+        sub_outputs = output.split("--"*10 )
+        for i in sub_outputs:
+            print(i)
+    print(len(output))
 
 
 if __name__ == '__main__':
