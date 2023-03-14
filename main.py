@@ -21,17 +21,17 @@ def main():
 
 
     #--- Search By ISSN and eISSN
-    # by = input("Search By [ISSN, eISSN, both]? ")
-    # id = input("Enter ID: ")
+    by = input("Search By [ISSN, eISSN, both]? ")
+    id = input("Enter ID: ")
     
-    # output = search_object.SearchByID(id,by)
-    # print(output.strip())
-    output = search_object.SearchByKeyword('plant')
-    if len(output) > 1500:
-        sub_outputs = output.split("--"*10 )
-        for i in sub_outputs:
-            print(i)
-    print(len(output))
+    output = search_object.SearchByID(id,by)
+    print(output.strip())
+    # output = search_object.SearchByKeyword('plant')
+    # if len(output) > 1500:
+    #     sub_outputs = output.split("--"*10 )
+    #     for i in sub_outputs:
+    #         print(i)
+    # print(len(output))
 
 
 if __name__ == '__main__':

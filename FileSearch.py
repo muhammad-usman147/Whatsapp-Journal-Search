@@ -74,7 +74,7 @@ class Search():
                 #query to search by eISSN only
                 results = self.dataframe.query(f"eISSN == '{id}'")
             elif search_by == journal_id[2]:
-                results = self.dataframe.query(f"eISSN == '{id}' |eISSN == '{id}'  ")
+                results = self.dataframe.query(f"eISSN == '{id}' | eISSN == '{id}'  ")
             else:
                 JournalIDError(f"The provided either ID: {id} or search_type: {search_by} is invalid ")
             
